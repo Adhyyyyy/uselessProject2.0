@@ -1,5 +1,7 @@
 import { useRef, useEffect, useState } from 'react';
 import Matter from 'matter-js';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Cloud, Bird, Play, Volume2, VolumeX, RotateCcw, ChevronRight } from 'lucide-react';
 import { CharacterStateMachine } from './CharacterStateMachine.js';
 import { PhysicsController } from './PhysicsController.js';
 import PoseController from './PoseController.js';
@@ -28,24 +30,24 @@ const GameCanvas = () => {
   const skyAnimationRef = useRef(null);
   const skyElementsRef = useRef({ clouds: [], birds: [] });
   
-  // Terms and conditions state
-  const [termsAccepted, setTermsAccepted] = useState({
-    term1: false,
-    term2: false,
-    term3: false
-  });
-  
-  const allTermsAccepted = Object.values(termsAccepted).every(Boolean);
+  // No terms/checkboxes needed - direct access
 
   // Voice control state
   const [voiceEnabled, setVoiceEnabled] = useState(true);
 
   useEffect(() => {
     dialogueRef.current = dialogue;
-    // When dialogue just appeared, place bubble near current head position immediately
-    if (dialogue && engineRef.current?.characterParts?.head) {
-      const head = engineRef.current.characterParts.head;
-      setBubblePos({ x: head.position.x + 20, y: head.position.y - 30 });
+    // When dialogue just appeared, place bubble at center of canvas
+    if (dialogue) {
+      const canvasPadding = 16;
+      
+      // Position bubble at center of canvas
+      const canvasWidth = 800;
+      const canvasHeight = 400; // Updated to match current canvas height
+      const bubbleX = (canvasWidth / 2) + canvasPadding;
+      const bubbleY = (canvasHeight / 2) + canvasPadding;
+      
+      setBubblePos({ x: bubbleX, y: bubbleY });
     }
     // Adjust font size to keep text within bubble
     if (dialogue) {
@@ -891,23 +893,8 @@ const GameCanvas = () => {
         ctx.restore();
       });
 
-      // Update speech bubble position (throttled) near the head
-      const now = performance.now();
-      if (dialogueRef.current && now - lastBubbleUpdateRef.current > 100) {
-        const head = characterParts.head;
-        if (head) {
-          // Offset bubble slightly above and to the right of head
-          const bx = head.position.x + 20;
-          const by = head.position.y - 30;
-          setBubblePos((prev) => {
-            if (!prev || Math.abs(prev.x - bx) > 1 || Math.abs(prev.y - by) > 1) {
-              return { x: bx, y: by };
-            }
-            return prev;
-          });
-          lastBubbleUpdateRef.current = now;
-        }
-      }
+      // Keep speech bubble at center of canvas (no need to update position)
+      // Bubble stays fixed at center, so no real-time positioning needed
     });
 
     // Background is now handled by CSS gradient
@@ -970,272 +957,427 @@ const GameCanvas = () => {
     };
   }, [gameState]);
 
-  // Modern Hell-Themed Landing Page
+  // Modern Sunset-Themed Landing Page
   if (gameState === 'intro') {
     return (
-      <div className="min-h-screen relative overflow-hidden">
-        {/* Hell/Danger Background - Canvas Colors */}
+      <div className="min-h-screen relative overflow-hidden font-['Inter',system-ui,sans-serif]">
+        {/* Animated Sunset Background */}
+        <div className="absolute inset-0">
         <div 
-          className="absolute inset-0"
+            className="absolute inset-0 animate-pulse"
           style={{
-            background: 'linear-gradient(135deg, #1a1a1a 0%, #4a1a1a 25%, #8b2635 50%, #d2691e 75%, #ffa500 100%)'
-          }}
-        />
-        
-        {/* Overlay Pattern */}
-        <div className="absolute inset-0 opacity-10">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `radial-gradient(circle at 25% 25%, #ff4444 0%, transparent 50%), 
-                             radial-gradient(circle at 75% 75%, #ff6b35 0%, transparent 50%)`
-          }} />
+              background: `
+                linear-gradient(135deg, 
+                  #FF6B6B 0%, 
+                  #FF8E8E 15%, 
+                  #FFA726 35%, 
+                  #FFD54F 60%, 
+                  #FFECB3 80%, 
+                  #81C784 90%, 
+                  #4FC3F7 100%
+                )
+              `
+            }}
+          />
+          
+          {/* Animated Hills Layers */}
+          <div className="absolute bottom-0 left-0 right-0">
+            <motion.svg 
+              viewBox="0 0 1200 400" 
+              className="w-full h-64"
+              initial={{ opacity: 0, y: 50 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 2, ease: "easeOut" }}
+            >
+              {/* Back Hills */}
+              <motion.path
+                d="M0,300 Q200,250 400,280 T800,260 L1200,280 L1200,400 L0,400 Z"
+                fill="rgba(139, 69, 19, 0.3)"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 3, delay: 0.5 }}
+              />
+              {/* Middle Hills */}
+              <motion.path
+                d="M0,320 Q300,280 600,300 T1200,290 L1200,400 L0,400 Z"
+                fill="rgba(101, 67, 33, 0.5)"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 3, delay: 1 }}
+              />
+              {/* Front Hills */}
+              <motion.path
+                d="M0,340 Q150,320 300,330 T600,325 T1200,320 L1200,400 L0,400 Z"
+                fill="rgba(85, 107, 47, 0.7)"
+                initial={{ pathLength: 0 }}
+                animate={{ pathLength: 1 }}
+                transition={{ duration: 3, delay: 1.5 }}
+              />
+            </motion.svg>
         </div>
         
-        {/* Content Container */}
-        <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
-          <div className="w-full max-w-4xl mx-auto">
-            
-            {/* Header */}
-            <div className="text-center mb-12">
-              <div className="inline-block p-4 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-full mb-6 backdrop-blur-sm border border-red-500/30">
-                <div className="text-5xl">💀</div>
-              </div>
-              
-              <h1 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent mb-4">
-                DESCENT INTO MADNESS
-              </h1>
-              
-              <p className="text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed">
-                Watch a determined soul fight the eternal cycle of gravity and hope
-              </p>
-            </div>
-            
-            {/* Terms and Conditions - Funny Legal Disclaimer */}
-            <div className="bg-black/40 backdrop-blur-sm rounded-3xl p-6 sm:p-8 mb-8 max-w-4xl mx-auto">
-              <div className="text-center mb-6">
-                <h2 className="text-2xl sm:text-3xl font-black text-red-300 mb-2">
-                  ⚖️ TERMS & CONDITIONS ⚖️
-                </h2>
-                <p className="text-white/90 text-sm sm:text-base font-semibold">
-                  MANDATORY AGREEMENT BEFORE WITNESSING THIS CHAOS
-                </p>
-              </div>
-              
-              {/* Terms List */}
-              <div className="space-y-8">
-                
-                {/* Term 1 */}
-                <div className="flex flex-col items-center text-center space-y-4 p-6 bg-white/5 rounded-xl">
-                  <input
-                    type="checkbox"
-                    id="term1"
-                    checked={termsAccepted.term1}
-                    onChange={(e) => setTermsAccepted(prev => ({...prev, term1: e.target.checked}))}
-                    className="w-6 h-6 text-green-500 bg-transparent border-2 border-green-400 rounded focus:ring-green-500 focus:ring-2 cursor-pointer"
-                  />
-                  <label htmlFor="term1" className="text-white/95 text-base sm:text-lg leading-relaxed cursor-pointer">
-                    <span className="font-bold text-red-300">1. WITNESS SUFFERING:</span><br />
-                    Are you ready to witness someone suffer repeatedly?
-                  </label>
-                </div>
-                
-                {/* Term 2 */}
-                <div className="flex flex-col items-center text-center space-y-4 p-6 bg-white/5 rounded-xl">
-                  <input
-                    type="checkbox"
-                    id="term2"
-                    checked={termsAccepted.term2}
-                    onChange={(e) => setTermsAccepted(prev => ({...prev, term2: e.target.checked}))}
-                    className="w-6 h-6 text-green-500 bg-transparent border-2 border-green-400 rounded focus:ring-green-500 focus:ring-2 cursor-pointer"
-                  />
-                  <label htmlFor="term2" className="text-white/95 text-base sm:text-lg leading-relaxed cursor-pointer">
-                    <span className="font-bold text-orange-300">2. EMOTIONAL STRENGTH:</span><br />
-                    Are you emotionally strong enough to handle this?
-                  </label>
-                </div>
-                
-                {/* Term 3 */}
-                <div className="flex flex-col items-center text-center space-y-4 p-6 bg-white/5 rounded-xl">
-                  <input
-                    type="checkbox"
-                    id="term3"
-                    checked={termsAccepted.term3}
-                    onChange={(e) => setTermsAccepted(prev => ({...prev, term3: e.target.checked}))}
-                    className="w-6 h-6 text-green-500 bg-transparent border-2 border-green-400 rounded focus:ring-green-500 focus:ring-2 cursor-pointer"
-                  />
-                  <label htmlFor="term3" className="text-white/95 text-base sm:text-lg leading-relaxed cursor-pointer">
-                    <span className="font-bold text-yellow-300">3. WITNESS BAD THINGS:</span><br />
-                    You may have to witness very bad things. Are you prepared?
-                  </label>
-                </div>
-              </div>
-              
-              {/* Legal Footer */}
-              <div className="mt-6 pt-4 border-t border-white/20">
-                <p className="text-white/70 text-xs text-center leading-relaxed">
-                  By checking all boxes above, you hereby waive your right to complain about time wasted, 
-                  productivity lost, or any spontaneous urges to jump off furniture to test gravity. 
-                  <br />
-                  <span className="text-red-300 font-semibold">This agreement is binding in all dimensions where physics applies.</span>
-                </p>
-              </div>
-            </div>
-            
-            {/* Conditional Start Button */}
-            <div className="text-center mt-12">
-              {allTermsAccepted ? (
-                <div className="relative inline-block">
-                  <button
-                    onClick={startGame}
-                    className="group relative inline-flex items-center justify-center px-12 py-6 text-2xl font-black text-white bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 rounded-full hover:from-red-500 hover:via-orange-400 hover:to-yellow-400 transform hover:scale-110 transition-all duration-300 shadow-2xl hover:shadow-orange-500/60"
-                  >
-                    <span className="relative z-10 flex items-center gap-4">
-                      😈 WATCH HIM SUFFER
-                    </span>
-                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-40 transition-opacity duration-300"></div>
-                    <div className="absolute -inset-2 bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 rounded-full opacity-0 group-hover:opacity-80 blur-xl transition-opacity duration-300"></div>
-                  </button>
-                  
-                  {/* Floating text around button */}
-                  <div className="absolute -top-6 -left-8 text-2xl animate-bounce delay-300">😂</div>
-                  <div className="absolute -top-4 -right-8 text-2xl animate-bounce delay-700">🤣</div>
-                  <div className="absolute -bottom-6 left-4 text-2xl animate-bounce delay-500">💀</div>
-                  
-                  {/* Success Message */}
-                  <p className="text-green-300 text-base mt-6 font-semibold animate-pulse">
-                    ✅ Agreement Complete! You may now proceed to witness the chaos.
-                  </p>
-                </div>
-              ) : (
-                <div className="relative inline-block">
-                  {/* Disabled Button */}
-                  <button
-                    disabled
-                    className="relative inline-flex items-center justify-center px-12 py-6 text-2xl font-black text-gray-500 bg-gray-600 rounded-full cursor-not-allowed opacity-50"
-                  >
-                    <span className="flex items-center gap-4">
-                      🔒 TERMS REQUIRED
-                    </span>
-                  </button>
-                  
-                  {/* Instruction Message */}
-                  <p className="text-red-300 text-base mt-6 font-semibold animate-pulse">
-                    ⚠️ You must agree to all terms above to proceed with this madness!
-                  </p>
-                </div>
-              )}
-            </div>
+          {/* Floating Clouds */}
+          <div className="absolute inset-0 pointer-events-none">
+            {[...Array(4)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute text-white/70"
+                style={{ 
+                  left: `${20 + i * 25}%`, 
+                  top: `${15 + i * 5}%`,
+                  fontSize: `${2 + i * 0.5}rem`
+                }}
+                animate={{
+                  x: [0, 100, 0],
+                  y: [0, -20, 0],
+                }}
+                transition={{
+                  duration: 15 + i * 5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                <Cloud size={40 + i * 10} />
+              </motion.div>
+            ))}
           </div>
+
+          {/* Flying Birds */}
+          <div className="absolute inset-0 pointer-events-none">
+            {[...Array(3)].map((_, i) => (
+              <motion.div
+                key={i}
+                className="absolute text-gray-800/60"
+                style={{ 
+                  left: `${10 + i * 30}%`, 
+                  top: `${25 + i * 10}%`
+                }}
+                animate={{
+                  x: [0, 200, 400],
+                  y: [0, -30, -10],
+                }}
+                transition={{
+                  duration: 20 + i * 3,
+                  repeat: Infinity,
+                  ease: "linear"
+                }}
+              >
+                <motion.div
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 0.5, repeat: Infinity }}
+                >
+                  <Bird size={20 + i * 5} />
+                </motion.div>
+              </motion.div>
+            ))}
+          </div>
+              </div>
+              
+        {/* Content Container */}
+        <div className="relative z-10 min-h-screen flex items-center justify-center px-6 py-4">
+          <motion.div 
+            className="w-full max-w-5xl mx-auto"
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 1 }}
+          >
+            
+            {/* Ultra Compact Hero Section */}
+            <motion.div 
+              className="text-center mb-4"
+              initial={{ opacity: 0, scale: 0.9 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 1, delay: 0.3 }}
+            >
+              <motion.div 
+                className="inline-block p-3 bg-white/10 backdrop-blur-lg rounded-full mb-2 border border-white/20 shadow-2xl"
+                whileHover={{ scale: 1.1, rotate: 5 }}
+                transition={{ type: "spring", stiffness: 300 }}
+              >
+                <motion.div 
+                  className="text-3xl"
+                  animate={{ rotate: [0, 10, -10, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  🌅
+                </motion.div>
+              </motion.div>
+              
+              <motion.h1 
+                className="text-3xl md:text-4xl font-black mb-2"
+                style={{
+                  background: 'linear-gradient(135deg, #FF6B6B, #FFA726, #FFD54F, #81C784)',
+                  WebkitBackgroundClip: 'text',
+                  WebkitTextFillColor: 'transparent',
+                  backgroundSize: '300% 300%',
+                }}
+                animate={{
+                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                }}
+                transition={{ duration: 5, repeat: Infinity }}
+              >
+                SUNSET ADVENTURE
+              </motion.h1>
+              
+              <motion.p 
+                className="text-base md:text-lg text-white/90 max-w-xl mx-auto leading-snug font-medium"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 1, delay: 0.8 }}
+              >
+                Watch our brave hero's endless journey through gravity and determination
+              </motion.p>
+            </motion.div>
+            
+                        {/* Ultra Compact Adventure Info */}
+            <motion.div 
+              className="max-w-2xl mx-auto mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1 }}
+            >
+              <div className="grid grid-cols-3 gap-2">
+                <motion.div 
+                  className="text-center p-2 bg-white/8 backdrop-blur-lg rounded-lg"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                >
+                  <div className="text-lg mb-1">🎭</div>
+                  <h3 className="font-bold text-white text-xs">WITNESS GREATNESS</h3>
+                </motion.div>
+                
+                <motion.div 
+                  className="text-center p-2 bg-white/8 backdrop-blur-lg rounded-lg"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                >
+                  <div className="text-lg mb-1">💪</div>
+                  <h3 className="font-bold text-white text-xs">EMOTIONAL READINESS</h3>
+                </motion.div>
+                
+                <motion.div 
+                  className="text-center p-2 bg-white/8 backdrop-blur-lg rounded-lg"
+                  whileHover={{ scale: 1.05, y: -2 }}
+                >
+                  <div className="text-lg mb-1">✨</div>
+                  <h3 className="font-bold text-white text-xs">EXPECT WONDER</h3>
+                </motion.div>
+              </div>
+            </motion.div>
+            
+                        {/* Call to Action */}
+            <motion.div 
+              className="text-center"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 1.5 }}
+            >
+              <motion.button
+                onClick={startGame}
+                className="group relative inline-flex items-center gap-2 px-8 py-3 text-lg md:text-xl font-black text-white rounded-full overflow-hidden cursor-pointer mb-2"
+                style={{
+                  background: 'linear-gradient(135deg, #FF6B6B, #FFA726, #FFD54F)',
+                  backgroundSize: '200% 200%',
+                }}
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+                animate={{
+                  backgroundPosition: ['0% 50%', '100% 50%', '0% 50%'],
+                }}
+                transition={{
+                  backgroundPosition: { duration: 3, repeat: Infinity },
+                  scale: { type: "spring", stiffness: 300 }
+                }}
+              >
+                <motion.div
+                  animate={{ rotate: [0, 360] }}
+                  transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+                >
+                  <Play size={20} />
+                </motion.div>
+                START ADVENTURE
+                <motion.div
+                  animate={{ x: [0, 2, 0] }}
+                  transition={{ duration: 1, repeat: Infinity }}
+                >
+                  <ChevronRight size={20} />
+                </motion.div>
+                
+                {/* Ripple Effect */}
+                <motion.div
+                  className="absolute inset-0 bg-white/20 rounded-full"
+                  initial={{ scale: 0, opacity: 1 }}
+                  whileHover={{ scale: 1.5, opacity: 0 }}
+                  transition={{ duration: 0.6 }}
+                />
+              </motion.button>
+              
+              {/* Ultra Compact Warning */}
+              <motion.p 
+                className="text-orange-300 text-xs font-medium max-w-xs mx-auto"
+                animate={{ opacity: [0.7, 1, 0.7] }}
+                transition={{ duration: 2, repeat: Infinity }}
+              >
+                ⚠️ Physics-defying stunts ahead
+              </motion.p>
+            </motion.div>
+          </motion.div>
         </div>
       </div>
     );
   }
 
-  // Game Page
+  // Game Page - Modern Design
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 p-4">
-      {/* Game Header */}
-      <div className="w-full max-w-6xl flex justify-between items-center mb-6">
-        <button
-          onClick={goBackToIntro}
-          className="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600 transition-colors"
-        >
-          ← Back to Intro
-        </button>
-        
-        <div className="text-center">
-          
-          <p className="text-gray-300 text-lg">
-            Watch our determined hero's endless adventure!
-          </p>
-        </div>
-        
-        <div className="w-32"></div> {/* Spacer for center alignment */}
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-gray-900 via-slate-800 to-gray-900">
+      {/* Animated Background Pattern */}
+      <div className="absolute inset-0 opacity-5">
+        <div className="absolute inset-0" style={{
+          backgroundImage: `radial-gradient(circle at 25% 25%, #FF6B6B 0%, transparent 50%), 
+                           radial-gradient(circle at 75% 75%, #FFA726 0%, transparent 50%)`
+        }} />
       </div>
+      
+      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-6">
+        {/* Modern Game Header */}
+        <motion.div 
+          className="w-full max-w-6xl flex justify-between items-center mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+        >
+          <motion.button
+          onClick={goBackToIntro}
+            className="flex items-center gap-3 px-6 py-3 bg-white/10 backdrop-blur-lg text-white rounded-xl hover:bg-white/15 transition-all duration-300 border border-white/20 font-medium"
+            whileHover={{ scale: 1.05, x: -5 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <ChevronRight size={20} className="rotate-180" />
+            Back to Adventure
+          </motion.button>
+          
+          <motion.div 
+            className="text-center"
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6, delay: 0.2 }}
+          >
+            <motion.h1 
+              className="text-3xl md:text-4xl font-bold mb-2"
+              style={{
+                background: 'linear-gradient(135deg, #FF6B6B, #FFA726, #FFD54F)',
+                WebkitBackgroundClip: 'text',
+                WebkitTextFillColor: 'transparent',
+              }}
+            >
+            Sunset Adventure
+            </motion.h1>
+            
+          </motion.div>
+          
+          <div className="w-48"></div> {/* Spacer for center alignment */}
+        </motion.div>
 
-      {/* Game Canvas */}
-      <div className="relative">
+        {/* Modern Game Canvas Container */}
+        <motion.div 
+          className="relative"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.8, delay: 0.3 }}
+        >
+          {/* Elegant Canvas Frame */}
+          <div className="relative p-4 bg-gradient-to-br from-white/10 to-white/5 backdrop-blur-lg rounded-3xl border border-white/20 shadow-2xl">
         {/* Gradient Background (fallback) */}
         <div 
-          className="absolute inset-0 border-4 border-orange-400 rounded-lg shadow-2xl"
+            className="absolute inset-4 rounded-2xl shadow-inner"
           style={{
             width: '800px',
-            height: '600px',
+              height: '400px',
             background: 'linear-gradient(to bottom, #FF6B6B 0%, #FF8E8E 30%, #FFA726 60%, #FFD54F 80%, #FFECB3 100%)'
           }}
         />
         
         <canvas
           ref={canvasRef}
-          className="relative z-10 border-4 border-orange-400 rounded-lg shadow-2xl block"
+            className="relative z-10 rounded-2xl shadow-xl block"
           style={{ 
-            imageRendering: 'pixelated', // For crisp pixel art
+              imageRendering: 'pixelated',
             width: '800px',
-            height: '600px',
+              height: '400px',
             background: 'transparent',
             display: 'block'
           }}
         />
+          
+          {/* Decorative Corner Accents */}
+          <div className="absolute top-2 left-2 w-6 h-6 border-l-2 border-t-2 border-white/30 rounded-tl-lg"></div>
+          <div className="absolute top-2 right-2 w-6 h-6 border-r-2 border-t-2 border-white/30 rounded-tr-lg"></div>
+          <div className="absolute bottom-2 left-2 w-6 h-6 border-l-2 border-b-2 border-white/30 rounded-bl-lg"></div>
+          <div className="absolute bottom-2 right-2 w-6 h-6 border-r-2 border-b-2 border-white/30 rounded-br-lg"></div>
+        </div>
         
         {/* Game Info Overlay */}
        
 
-        {/* Cartoon Dialogue Bubble */}
+          {/* Enhanced Dialogue Bubble */}
         {dialogue && bubblePos.x != null && bubblePos.y != null && (
-          <div
-            className="absolute z-20 pointer-events-none animate-[bubbleIn_0.4s_ease-out]"
+            <motion.div
+              className="absolute z-20 pointer-events-none"
             style={{ 
               left: bubblePos.x, 
               top: bubblePos.y, 
-              transform: 'translate(-50%, -110%)',
-              filter: 'drop-shadow(0 8px 16px rgba(0, 0, 0, 0.3))'
+                transform: 'translate(-50%, -50%)',
             }}
+              initial={{ opacity: 0, scale: 0.5, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.5, y: -20 }}
+              transition={{ type: "spring", stiffness: 300, damping: 25 }}
           >
-            <div 
-              className="relative animate-[breathe_3s_ease-in-out_infinite]" 
+              <motion.div 
+                className="relative" 
               style={{ width: 300, height: 150 }}
-            >
-              {/* Cartoon SVG speech bubble */}
+                animate={{ 
+                  y: [0, -8, 0],
+                  rotate: [0, 1, -1, 0]
+                }}
+                transition={{ 
+                  duration: 4, 
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+              >
+                {/* Modern SVG speech bubble */}
               <svg width="300" height="150" viewBox="0 0 300 150">
                 <defs>
                   <clipPath id="speechClip">
-                    {/* Bigger, rounder, more cartoon-like bubble */}
                     <path d="M50,85 C30,85 20,65 35,50 C30,25 65,15 85,35 C100,10 140,10 160,35 C180,20 220,30 225,55 C250,55 270,75 260,95 C250,120 210,125 190,110 C170,130 130,130 110,110 C85,125 60,120 50,105 C35,105 25,95 30,85 Z" />
                   </clipPath>
-                  <filter id="bubbleShadow">
-                    <feDropShadow dx="0" dy="4" stdDeviation="4" flood-color="rgba(0,0,0,0.2)" />
-                  </filter>
+                    <linearGradient id="bubbleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                      <stop offset="0%" stopColor="rgba(255,255,255,0.95)" />
+                      <stop offset="100%" stopColor="rgba(255,255,255,0.85)" />
+                    </linearGradient>
                 </defs>
                 
-                {/* Shadow layer */}
+                  {/* Glow effect */}
                 <path 
                   d="M50,85 C30,85 20,65 35,50 C30,25 65,15 85,35 C100,10 140,10 160,35 C180,20 220,30 225,55 C250,55 270,75 260,95 C250,120 210,125 190,110 C170,130 130,130 110,110 C85,125 60,120 50,105 C35,105 25,95 30,85 Z" 
-                  fill="rgba(0,0,0,0.1)" 
-                  transform="translate(2,4)"
+                    fill="rgba(255,107,107,0.3)" 
+                    transform="scale(1.1)"
+                    style={{ filter: 'blur(8px)' }}
                 />
                 
-                {/* Main bubble with thick cartoon border */}
+                  {/* Main bubble */}
                 <path 
                   d="M50,85 C30,85 20,65 35,50 C30,25 65,15 85,35 C100,10 140,10 160,35 C180,20 220,30 225,55 C250,55 270,75 260,95 C250,120 210,125 190,110 C170,130 130,130 110,110 C85,125 60,120 50,105 C35,105 25,95 30,85 Z" 
-                  fill="#ffffff" 
-                  stroke="#1a1a1a" 
-                  strokeWidth="6" 
+                    fill="url(#bubbleGradient)" 
+                    stroke="rgba(255,107,107,0.6)" 
+                    strokeWidth="3" 
                   strokeLinejoin="round"
                 />
                 
-                {/* Cartoon tail with thick border */}
+                  {/* Tail */}
                 <path 
                   d="M85,115 L70,145 L110,120" 
-                  fill="#ffffff" 
-                  stroke="#1a1a1a" 
-                  strokeWidth="6" 
-                  strokeLinejoin="round"
-                />
-                
-                {/* Inner highlight for 3D effect */}
-                <path 
-                  d="M50,85 C30,85 20,65 35,50 C30,25 65,15 85,35 C100,10 140,10 160,35 C180,20 220,30 225,55 C250,55 270,75 260,95" 
-                  fill="none" 
-                  stroke="rgba(255,255,255,0.6)" 
+                    fill="url(#bubbleGradient)" 
+                    stroke="rgba(255,107,107,0.6)" 
                   strokeWidth="3" 
                   strokeLinejoin="round"
                 />
@@ -1255,14 +1397,13 @@ const GameCanvas = () => {
                   >
                     <div
                       style={{
-                        fontFamily: "'Comic Neue', 'Baloo 2', cursive, system-ui",
-                        fontWeight: 800,
+                          fontFamily: "'Inter', system-ui",
+                          fontWeight: 700,
                         color: '#1a1a1a',
                         fontSize: bubbleFontSize + 2,
-                        lineHeight: 1.1,
+                          lineHeight: 1.2,
                         textAlign: 'center',
                         wordBreak: 'break-word',
-                        hyphens: 'auto',
                         overflow: 'hidden',
                         display: '-webkit-box',
                         WebkitLineClamp: 3,
@@ -1275,26 +1416,35 @@ const GameCanvas = () => {
                   </div>
                 </foreignObject>
               </svg>
-            </div>
-          </div>
-        )}
-      </div>
+              </motion.div>
+            </motion.div>
+          )}
+        </motion.div>
 
-      {/* Game Controls */}
-      <div className="mt-4 text-center space-y-2">
-        {/* Voice Toggle Button */}
-        <button
-          onClick={toggleVoice}
-          className={`mr-4 px-4 py-2 rounded-lg transition-colors ${
-            voiceEnabled 
-              ? 'bg-green-600 hover:bg-green-500 text-white' 
-              : 'bg-gray-600 hover:bg-gray-500 text-gray-300'
-          }`}
+        {/* Modern Game Controls */}
+        <motion.div 
+          className="mt-8 flex flex-wrap justify-center gap-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6, delay: 0.4 }}
         >
-          {voiceEnabled ? '🔊 Voice ON' : '🔇 Voice OFF'}
-        </button>
+        {/* Voice Toggle Button */}
+          <motion.button
+          onClick={toggleVoice}
+            className={`flex items-center gap-3 px-6 py-3 rounded-xl font-semibold transition-all duration-300 backdrop-blur-lg border ${
+            voiceEnabled 
+                ? 'bg-green-500/20 hover:bg-green-500/30 text-green-300 border-green-500/30' 
+                : 'bg-red-500/20 hover:bg-red-500/30 text-red-300 border-red-500/30'
+          }`}
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+        >
+            {voiceEnabled ? <Volume2 size={20} /> : <VolumeX size={20} />}
+            {voiceEnabled ? 'Voice ON' : 'Voice OFF'}
+          </motion.button>
        
-        <button
+          {/* Reset Button */}
+          <motion.button
           onClick={() => {
             setBounceCount(0);
             setIsGrounded(false);
@@ -1305,8 +1455,6 @@ const GameCanvas = () => {
             if (stateMachineRef.current) {
               stateMachineRef.current.reset();
             }
-            
-            // Clear any existing intervals - handled by components now
             
             // Reset character position via physics controller
             if (physicsControllerRef.current) {
@@ -1326,10 +1474,19 @@ const GameCanvas = () => {
               }
             }, 100);
           }}
-        className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-500 transition-colors"
-        >
-          Throw him again
-        </button>
+            className="flex items-center gap-3 px-6 py-3 bg-gradient-to-r from-orange-500/20 to-amber-500/20 hover:from-orange-500/30 hover:to-amber-500/30 text-orange-300 rounded-xl font-semibold transition-all duration-300 backdrop-blur-lg border border-orange-500/30"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            <motion.div
+              animate={{ rotate: [0, 360] }}
+              transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            >
+              <RotateCcw size={20} />
+            </motion.div>
+            New Adventure
+          </motion.button>
+        </motion.div>
       </div>
     </div>
   );

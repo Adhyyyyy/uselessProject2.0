@@ -1,0 +1,53 @@
+[build]
+  # Directory to change to before starting a build
+  base = "."
+  
+  # Directory that contains the deploy-ready HTML files and assets
+  publish = "dist"
+  
+  # Default build command
+  command = "npm run build"
+
+[build.environment]
+  # Node.js version for the build
+  NODE_VERSION = "18"
+
+[[redirects]]
+  # Redirect all routes to index.html for SPA routing
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[dev]
+  # Command to start the dev server
+  command = "npm run dev"
+  port = 5173
+  publish = "dist"
+
+# Headers for better performance and security
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Enable gzip compression
+    Content-Encoding = "gzip"
+    
+    # Cache static assets for 1 year
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "*.html"
+  [headers.values]
+    # Don't cache HTML files
+    Cache-Control = "public, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "*.js"
+  [headers.values]
+    # Cache JavaScript files
+    Cache-Control = "public, max-age=31536000, immutable"
+    
+[[headers]]
+  for = "*.css"
+  [headers.values]
+    # Cache CSS files
+    Cache-Control = "public, max-age=31536000, immutable"
