@@ -39,14 +39,13 @@ const GameCanvas = () => {
     dialogueRef.current = dialogue;
     // When dialogue just appeared, place bubble at center of canvas
     if (dialogue) {
-      // Position bubble at center of canvas accounting for container padding
-      const canvasWidth = 600;
-      const canvasHeight = 300;
-      const containerPadding = 16; // p-4 = 16px padding from container
+      const canvasPadding = 16;
       
-      // Center coordinates relative to the canvas container
-      const bubbleX = (canvasWidth / 2) + containerPadding;
-      const bubbleY = (canvasHeight / 2) + containerPadding;
+      // Position bubble at center of canvas
+      const canvasWidth = 800;
+      const canvasHeight = 400; // Updated to match current canvas height
+      const bubbleX = (canvasWidth / 2) + canvasPadding;
+      const bubbleY = (canvasHeight / 2) + canvasPadding;
       
       setBubblePos({ x: bubbleX, y: bubbleY });
     }
@@ -88,27 +87,27 @@ const GameCanvas = () => {
     if (!canvas) return;
 
     // Set canvas size explicitly
-    canvas.width = 600;
-    canvas.height = 300;
-    canvas.style.width = '600px';
-    canvas.style.height = '300px';
+    canvas.width = 800;
+    canvas.height = 600;
+    canvas.style.width = '800px';
+    canvas.style.height = '600px';
     
     console.log('Canvas created:', canvas.width, 'x', canvas.height);
 
     // Initialize sky elements
     const initialClouds = [
-      { id: 1, x: 80, y: 50, size: 0.8, speed: 0.3, opacity: 0.8 },
-      { id: 2, x: 250, y: 80, size: 1.0, speed: 0.2, opacity: 0.6 },
-      { id: 3, x: 450, y: 40, size: 0.7, speed: 0.4, opacity: 0.7 },
-      { id: 4, x: 550, y: 65, size: 0.9, speed: 0.25, opacity: 0.5 },
+      { id: 1, x: 100, y: 80, size: 1, speed: 0.3, opacity: 0.8 },
+      { id: 2, x: 300, y: 120, size: 1.2, speed: 0.2, opacity: 0.6 },
+      { id: 3, x: 500, y: 60, size: 0.8, speed: 0.4, opacity: 0.7 },
+      { id: 4, x: 700, y: 100, size: 1.1, speed: 0.25, opacity: 0.5 },
     ];
     
     const initialBirds = [
-      { id: 1, x: 150, y: 100, wingPhase: 0, speed: 1.2, flockOffset: 0 },
-      { id: 2, x: 170, y: 110, wingPhase: Math.PI/3, speed: 1.2, flockOffset: 20 },
-      { id: 3, x: 190, y: 105, wingPhase: Math.PI*2/3, speed: 1.2, flockOffset: 40 },
-      { id: 4, x: 450, y: 90, wingPhase: Math.PI, speed: 0.8, flockOffset: 0 },
-      { id: 5, x: 470, y: 100, wingPhase: Math.PI*4/3, speed: 0.8, flockOffset: 20 },
+      { id: 1, x: 200, y: 150, wingPhase: 0, speed: 1.2, flockOffset: 0 },
+      { id: 2, x: 220, y: 160, wingPhase: Math.PI/3, speed: 1.2, flockOffset: 20 },
+      { id: 3, x: 240, y: 155, wingPhase: Math.PI*2/3, speed: 1.2, flockOffset: 40 },
+      { id: 4, x: 600, y: 120, wingPhase: Math.PI, speed: 0.8, flockOffset: 0 },
+      { id: 5, x: 620, y: 130, wingPhase: Math.PI*4/3, speed: 0.8, flockOffset: 20 },
     ];
     
     setSkyElements({ clouds: initialClouds, birds: initialBirds });
@@ -126,8 +125,8 @@ const GameCanvas = () => {
       canvas: canvas,
       engine: engine,
       options: {
-        width: 600,
-        height: 300,
+        width: 800,
+        height: 600,
         wireframes: false,
         background: 'transparent', // Let CSS gradient show through
         showAngleIndicator: false,
@@ -145,7 +144,7 @@ const GameCanvas = () => {
     runnerRef.current = runner;
 
     // Create ground
-    const ground = Matter.Bodies.rectangle(300, 280, 600, 40, { 
+    const ground = Matter.Bodies.rectangle(400, 580, 800, 40, { 
       isStatic: true,
       render: {
         fillStyle: '#4A5D23', // Dark green ground
@@ -438,16 +437,16 @@ const GameCanvas = () => {
     // Create Ladder on left side
     const ladderParts = [];
     const ladderX = 50;
-    const ladderHeight = 200;
-    const rungs = 5;
+    const ladderHeight = 500;
+    const rungs = 8;
     
     // Ladder sides
-    const leftSide = Matter.Bodies.rectangle(ladderX - 15, 180, 8, ladderHeight, {
+    const leftSide = Matter.Bodies.rectangle(ladderX - 15, 300, 8, ladderHeight, {
       isStatic: true,
       render: { fillStyle: '#8B4513' }
     });
     
-    const rightSide = Matter.Bodies.rectangle(ladderX + 15, 180, 8, ladderHeight, {
+    const rightSide = Matter.Bodies.rectangle(ladderX + 15, 300, 8, ladderHeight, {
       isStatic: true,
       render: { fillStyle: '#8B4513' }
     });
@@ -456,7 +455,7 @@ const GameCanvas = () => {
     
     // Ladder rungs
     for (let i = 0; i < rungs; i++) {
-      const rungY = 250 - (i * 40); // Space rungs 40px apart
+      const rungY = 520 - (i * 60); // Space rungs 60px apart
       const rung = Matter.Bodies.rectangle(ladderX, rungY, 30, 6, {
         isStatic: true,
         render: { fillStyle: '#A0522D' }
@@ -572,14 +571,14 @@ const GameCanvas = () => {
           ...cloud,
           x: cloud.x + cloud.speed,
           // Reset cloud position when it goes off screen
-          ...(cloud.x > 650 ? { x: -50 } : {})
+          ...(cloud.x > 850 ? { x: -50 } : {})
         })),
         birds: prevSky.birds.map(bird => ({
           ...bird,
           x: bird.x + bird.speed,
           wingPhase: bird.wingPhase + 0.3,
           // Reset bird position when it goes off screen
-          ...(bird.x > 650 ? { x: -30 } : {})
+          ...(bird.x > 850 ? { x: -30 } : {})
         }))
       }));
     };
@@ -663,15 +662,15 @@ const GameCanvas = () => {
       
       // Distant hills silhouettes with multiple layers for depth
       const hillLayers = [
-        { y: 200, height: 60, color: 'rgba(139, 69, 19, 0.3)', points: [0, 60, 150, 40, 300, 70, 450, 30, 600] },
-        { y: 230, height: 50, color: 'rgba(101, 67, 33, 0.4)', points: [0, 40, 200, 55, 400, 35, 600] },
-        { y: 250, height: 40, color: 'rgba(85, 107, 47, 0.5)', points: [0, 30, 180, 45, 350, 25, 520, 40, 600] }
+        { y: 400, height: 100, color: 'rgba(139, 69, 19, 0.3)', points: [0, 100, 150, 80, 300, 120, 450, 70, 600, 110, 750, 90, 800] },
+        { y: 450, height: 80, color: 'rgba(101, 67, 33, 0.4)', points: [0, 70, 200, 90, 400, 60, 600, 85, 800] },
+        { y: 480, height: 60, color: 'rgba(85, 107, 47, 0.5)', points: [0, 50, 180, 75, 350, 45, 520, 70, 680, 55, 800] }
       ];
       
       hillLayers.forEach(layer => {
         ctx.fillStyle = layer.color;
         ctx.beginPath();
-        ctx.moveTo(0, 300); // Start from bottom-left corner
+        ctx.moveTo(0, 600); // Start from bottom-left corner
         
         // Create hill silhouette using smooth curves
         for (let i = 0; i < layer.points.length; i += 2) {
@@ -689,7 +688,7 @@ const GameCanvas = () => {
           }
         }
         
-        ctx.lineTo(600, 300); // End at bottom-right corner
+        ctx.lineTo(800, 600); // End at bottom-right corner
         ctx.closePath();
         ctx.fill();
       });
@@ -706,7 +705,7 @@ const GameCanvas = () => {
       
       // Generate grass blades if not already done
       if (!engineRef.current.grassBlades) {
-        for (let x = 0; x < 600; x += 3) {
+        for (let x = 0; x < 800; x += 3) {
           for (let i = 0; i < 2; i++) {
             grassBlades.push({
               x: x + Math.random() * 3,
@@ -726,7 +725,7 @@ const GameCanvas = () => {
         ctx.lineWidth = 1;
         ctx.lineCap = 'round';
         
-        const baseY = 260;
+        const baseY = 560;
         const swayOffset = Math.sin(time + blade.x * 0.1) * blade.sway;
         
         ctx.beginPath();
@@ -738,10 +737,10 @@ const GameCanvas = () => {
       // Add some small flowers/details randomly
       if (!engineRef.current.grassDetails) {
         const details = [];
-        for (let i = 0; i < 15; i++) {
+        for (let i = 0; i < 20; i++) {
           details.push({
-            x: Math.random() * 600,
-            y: 258 + Math.random() * 4,
+            x: Math.random() * 800,
+            y: 558 + Math.random() * 4,
             type: Math.random() > 0.5 ? 'flower' : 'stone'
           });
         }
@@ -1290,8 +1289,8 @@ const GameCanvas = () => {
         <div 
             className="absolute inset-4 rounded-2xl shadow-inner"
           style={{
-            width: '600px',
-              height: '300px',
+            width: '800px',
+              height: '400px',
             background: 'linear-gradient(to bottom, #FF6B6B 0%, #FF8E8E 30%, #FFA726 60%, #FFD54F 80%, #FFECB3 100%)'
           }}
         />
@@ -1301,8 +1300,8 @@ const GameCanvas = () => {
             className="relative z-10 rounded-2xl shadow-xl block"
           style={{ 
               imageRendering: 'pixelated',
-            width: '600px',
-              height: '300px',
+            width: '800px',
+              height: '400px',
             background: 'transparent',
             display: 'block'
           }}
@@ -1334,7 +1333,7 @@ const GameCanvas = () => {
           >
               <motion.div 
                 className="relative" 
-              style={{ width: 240, height: 120 }}
+              style={{ width: 300, height: 150 }}
                 animate={{ 
                   y: [0, -8, 0],
                   rotate: [0, 1, -1, 0]
@@ -1346,10 +1345,10 @@ const GameCanvas = () => {
                 }}
               >
                 {/* Modern SVG speech bubble */}
-              <svg width="240" height="120" viewBox="0 0 240 120">
+              <svg width="300" height="150" viewBox="0 0 300 150">
                 <defs>
                   <clipPath id="speechClip">
-                    <path d="M40,68 C24,68 16,52 28,40 C24,20 52,12 68,28 C80,8 112,8 128,28 C144,16 176,24 180,44 C200,44 216,60 208,76 C200,96 168,100 152,88 C136,104 104,104 88,88 C68,100 48,96 40,84 C28,84 20,76 24,68 Z" />
+                    <path d="M50,85 C30,85 20,65 35,50 C30,25 65,15 85,35 C100,10 140,10 160,35 C180,20 220,30 225,55 C250,55 270,75 260,95 C250,120 210,125 190,110 C170,130 130,130 110,110 C85,125 60,120 50,105 C35,105 25,95 30,85 Z" />
                   </clipPath>
                     <linearGradient id="bubbleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stopColor="rgba(255,255,255,0.95)" />
@@ -1359,7 +1358,7 @@ const GameCanvas = () => {
                 
                   {/* Glow effect */}
                 <path 
-                  d="M40,68 C24,68 16,52 28,40 C24,20 52,12 68,28 C80,8 112,8 128,28 C144,16 176,24 180,44 C200,44 216,60 208,76 C200,96 168,100 152,88 C136,104 104,104 88,88 C68,100 48,96 40,84 C28,84 20,76 24,68 Z" 
+                  d="M50,85 C30,85 20,65 35,50 C30,25 65,15 85,35 C100,10 140,10 160,35 C180,20 220,30 225,55 C250,55 270,75 260,95 C250,120 210,125 190,110 C170,130 130,130 110,110 C85,125 60,120 50,105 C35,105 25,95 30,85 Z" 
                     fill="rgba(255,107,107,0.3)" 
                     transform="scale(1.1)"
                     style={{ filter: 'blur(8px)' }}
@@ -1367,24 +1366,24 @@ const GameCanvas = () => {
                 
                   {/* Main bubble */}
                 <path 
-                  d="M40,68 C24,68 16,52 28,40 C24,20 52,12 68,28 C80,8 112,8 128,28 C144,16 176,24 180,44 C200,44 216,60 208,76 C200,96 168,100 152,88 C136,104 104,104 88,88 C68,100 48,96 40,84 C28,84 20,76 24,68 Z" 
+                  d="M50,85 C30,85 20,65 35,50 C30,25 65,15 85,35 C100,10 140,10 160,35 C180,20 220,30 225,55 C250,55 270,75 260,95 C250,120 210,125 190,110 C170,130 130,130 110,110 C85,125 60,120 50,105 C35,105 25,95 30,85 Z" 
                     fill="url(#bubbleGradient)" 
                     stroke="rgba(255,107,107,0.6)" 
-                    strokeWidth="2" 
+                    strokeWidth="3" 
                   strokeLinejoin="round"
                 />
                 
                   {/* Tail */}
                 <path 
-                  d="M68,92 L56,116 L88,96" 
+                  d="M85,115 L70,145 L110,120" 
                     fill="url(#bubbleGradient)" 
                     stroke="rgba(255,107,107,0.6)" 
-                  strokeWidth="2" 
+                  strokeWidth="3" 
                   strokeLinejoin="round"
                 />
                 
                 {/* Text content */}
-                <foreignObject x="36" y="28" width="168" height="64" clipPath="url(#speechClip)">
+                <foreignObject x="45" y="35" width="210" height="80" clipPath="url(#speechClip)">
                   <div
                     xmlns="http://www.w3.org/1999/xhtml"
                     style={{
