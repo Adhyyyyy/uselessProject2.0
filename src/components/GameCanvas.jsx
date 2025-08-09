@@ -961,174 +961,159 @@ const GameCanvas = () => {
     };
   }, [gameState]);
 
-  // Game-Style Landing Page
+  // Modern Hell-Themed Landing Page
   if (gameState === 'intro') {
     return (
       <div className="min-h-screen relative overflow-hidden">
-        {/* Sunset Background - Same as Canvas */}
+        {/* Hell/Danger Background - Canvas Colors */}
         <div 
           className="absolute inset-0"
           style={{
-            background: 'linear-gradient(to bottom, #FF6B6B 0%, #FF8E8E 30%, #FFA726 60%, #FFD54F 80%, #FFECB3 100%)'
+            background: 'linear-gradient(135deg, #1a1a1a 0%, #4a1a1a 25%, #8b2635 50%, #d2691e 75%, #ffa500 100%)'
           }}
         />
         
-        {/* Animated Canvas-Style Background Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          {/* Hills */}
-          <svg className="absolute bottom-0 w-full h-96" viewBox="0 0 800 400" preserveAspectRatio="none">
-            <path d="M0,400 L0,320 Q100,280 200,300 Q300,320 400,290 Q500,260 600,280 Q700,300 800,270 L800,400 Z" fill="rgba(139, 69, 19, 0.3)" />
-            <path d="M0,400 L0,350 Q150,320 300,340 Q450,360 600,330 Q750,300 800,320 L800,400 Z" fill="rgba(101, 67, 33, 0.4)" />
-            <path d="M0,400 L0,370 Q200,340 400,360 Q600,380 800,350 L800,400 Z" fill="rgba(85, 107, 47, 0.5)" />
-          </svg>
-          
-          {/* Animated Clouds */}
-          <div className="absolute top-16 left-20 animate-pulse">
-            <svg width="120" height="60" viewBox="0 0 120 60">
-              <ellipse cx="30" cy="40" rx="30" ry="20" fill="rgba(255,255,255,0.8)" />
-              <ellipse cx="50" cy="30" rx="25" ry="18" fill="rgba(255,255,255,0.8)" />
-              <ellipse cx="70" cy="35" rx="28" ry="16" fill="rgba(255,255,255,0.8)" />
-              <ellipse cx="90" cy="40" rx="22" ry="15" fill="rgba(255,255,255,0.8)" />
-            </svg>
-          </div>
-          
-          <div className="absolute top-32 right-32 animate-pulse delay-1000">
-            <svg width="100" height="50" viewBox="0 0 100 50">
-              <ellipse cx="25" cy="35" rx="25" ry="15" fill="rgba(255,255,255,0.7)" />
-              <ellipse cx="45" cy="25" rx="20" ry="12" fill="rgba(255,255,255,0.7)" />
-              <ellipse cx="65" cy="30" rx="23" ry="14" fill="rgba(255,255,255,0.7)" />
-              <ellipse cx="80" cy="35" rx="18" ry="12" fill="rgba(255,255,255,0.7)" />
-            </svg>
-          </div>
-          
-          <div className="absolute top-24 left-1/2 transform -translate-x-1/2 animate-pulse delay-500">
-            <svg width="140" height="70" viewBox="0 0 140 70">
-              <ellipse cx="35" cy="45" rx="35" ry="22" fill="rgba(255,255,255,0.6)" />
-              <ellipse cx="60" cy="35" rx="30" ry="20" fill="rgba(255,255,255,0.6)" />
-              <ellipse cx="85" cy="40" rx="32" ry="18" fill="rgba(255,255,255,0.6)" />
-              <ellipse cx="110" cy="45" rx="25" ry="16" fill="rgba(255,255,255,0.6)" />
-            </svg>
-          </div>
-          
-          {/* Animated Birds */}
-          <div className="absolute top-40 left-1/4 animate-bounce" style={{animationDuration: '3s'}}>
-            <svg width="20" height="12" viewBox="0 0 20 12">
-              <path d="M2,6 Q6,2 10,6 Q14,2 18,6" stroke="#333" strokeWidth="2" fill="none" />
-            </svg>
-          </div>
-          
-          <div className="absolute top-48 right-1/4 animate-bounce delay-1000" style={{animationDuration: '2.5s'}}>
-            <svg width="16" height="10" viewBox="0 0 16 10">
-              <path d="M2,5 Q5,2 8,5 Q11,2 14,5" stroke="#333" strokeWidth="2" fill="none" />
-            </svg>
-          </div>
-          
-          {/* Ground Grass */}
-          <div className="absolute bottom-0 w-full h-20">
-            {/* Grass texture simulation */}
-            <div className="flex justify-between items-end h-full px-4">
-              {Array.from({length: 50}).map((_, i) => (
-                <div 
-                  key={i}
-                  className="bg-green-600 rounded-t-sm opacity-80"
-                  style={{
-                    width: '2px',
-                    height: `${8 + Math.random() * 12}px`,
-                    transform: `rotate(${(Math.random() - 0.5) * 10}deg)`
-                  }}
-                />
-              ))}
-            </div>
-          </div>
+        {/* Overlay Pattern */}
+        <div className="absolute inset-0 opacity-10">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `radial-gradient(circle at 25% 25%, #ff4444 0%, transparent 50%), 
+                             radial-gradient(circle at 75% 75%, #ff6b35 0%, transparent 50%)`
+          }} />
         </div>
         
-        {/* Content Overlay */}
-        <div className="relative z-10 min-h-screen flex items-center justify-center p-4">
-          <div className="text-center max-w-6xl mx-auto">
+        {/* Content Container */}
+        <div className="relative z-10 min-h-screen flex items-center justify-center p-6">
+          <div className="w-full max-w-4xl mx-auto">
             
-            {/* Funny Emoji Character */}
-            <div className="text-6xl sm:text-8xl mb-6 animate-bounce">😤</div>
-            
-            {/* Main Humorous Title */}
-            <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black mb-6 text-white drop-shadow-2xl leading-tight">
-              <span className="block text-yellow-300">I'm TRYING to QUIT!</span>
-              <span className="block text-red-300 text-2xl sm:text-3xl md:text-4xl lg:text-5xl mt-2">But Physics Won't Let Me!</span>
-            </h1>
-            
-            {/* Funny Description */}
-            <div className="bg-black/30 backdrop-blur-sm rounded-3xl p-6 sm:p-8 mb-8 border border-white/20">
-              <p className="text-lg sm:text-xl md:text-2xl text-white/95 mb-4 font-semibold">
-                Meet our hilariously determined little guy who's having an existential crisis! 🎭
-              </p>
-              <p className="text-base sm:text-lg text-white/90 leading-relaxed">
-                He climbs the ladder, leaps with hope, hits the ground, gets back up, and repeats... 
-                <br className="hidden sm:block" />
-                <span className="text-yellow-300 font-bold">It's like Monday mornings, but with more bouncing!</span>
+            {/* Header */}
+            <div className="text-center mb-12">
+              <div className="inline-block p-4 bg-gradient-to-br from-red-500/20 to-orange-500/20 rounded-full mb-6 backdrop-blur-sm border border-red-500/30">
+                <div className="text-5xl">💀</div>
+              </div>
+              
+              <h1 className="text-4xl md:text-6xl font-black bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 bg-clip-text text-transparent mb-4">
+                DESCENT INTO MADNESS
+              </h1>
+              
+              <p className="text-xl text-gray-200 max-w-2xl mx-auto leading-relaxed">
+                Watch a determined soul fight the eternal cycle of gravity and hope
               </p>
             </div>
             
-            {/* Tech Stack Display - Creative Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-8 max-w-4xl mx-auto">
-              
-              {/* React Card */}
-              <div className="group bg-gradient-to-br from-cyan-500/20 to-blue-600/20 backdrop-blur-sm border border-cyan-400/30 rounded-2xl p-6 hover:border-cyan-300/60 transition-all duration-300 hover:scale-105">
-                <div className="text-4xl mb-3 group-hover:animate-spin">⚛️</div>
-                <h3 className="text-lg font-bold text-cyan-300 mb-2">React</h3>
-                <p className="text-white/80 text-sm">Making components bounce like our hero!</p>
+            {/* Terms and Conditions - Funny Legal Disclaimer */}
+            <div className="bg-black/40 backdrop-blur-sm rounded-3xl p-6 sm:p-8 mb-8 max-w-4xl mx-auto">
+              <div className="text-center mb-6">
+                <h2 className="text-2xl sm:text-3xl font-black text-red-300 mb-2">
+                  ⚖️ TERMS & CONDITIONS ⚖️
+                </h2>
+                <p className="text-white/90 text-sm sm:text-base font-semibold">
+                  MANDATORY AGREEMENT BEFORE WITNESSING THIS CHAOS
+                </p>
               </div>
               
-              {/* Matter.js Card */}
-              <div className="group bg-gradient-to-br from-orange-500/20 to-red-600/20 backdrop-blur-sm border border-orange-400/30 rounded-2xl p-6 hover:border-orange-300/60 transition-all duration-300 hover:scale-105">
-                <div className="text-4xl mb-3 group-hover:animate-bounce">🌍</div>
-                <h3 className="text-lg font-bold text-orange-300 mb-2">Matter.js</h3>
-                <p className="text-white/80 text-sm">Physics engine that refuses to let him quit!</p>
+              {/* Terms List */}
+              <div className="space-y-8">
+                
+                {/* Term 1 */}
+                <div className="flex flex-col items-center text-center space-y-4 p-6 bg-white/5 rounded-xl">
+                  <input
+                    type="checkbox"
+                    id="term1"
+                    checked={termsAccepted.term1}
+                    onChange={(e) => setTermsAccepted(prev => ({...prev, term1: e.target.checked}))}
+                    className="w-6 h-6 text-green-500 bg-transparent border-2 border-green-400 rounded focus:ring-green-500 focus:ring-2 cursor-pointer"
+                  />
+                  <label htmlFor="term1" className="text-white/95 text-base sm:text-lg leading-relaxed cursor-pointer">
+                    <span className="font-bold text-red-300">1. WITNESS SUFFERING:</span><br />
+                    Are you ready to witness someone suffer repeatedly?
+                  </label>
+                </div>
+                
+                {/* Term 2 */}
+                <div className="flex flex-col items-center text-center space-y-4 p-6 bg-white/5 rounded-xl">
+                  <input
+                    type="checkbox"
+                    id="term2"
+                    checked={termsAccepted.term2}
+                    onChange={(e) => setTermsAccepted(prev => ({...prev, term2: e.target.checked}))}
+                    className="w-6 h-6 text-green-500 bg-transparent border-2 border-green-400 rounded focus:ring-green-500 focus:ring-2 cursor-pointer"
+                  />
+                  <label htmlFor="term2" className="text-white/95 text-base sm:text-lg leading-relaxed cursor-pointer">
+                    <span className="font-bold text-orange-300">2. EMOTIONAL STRENGTH:</span><br />
+                    Are you emotionally strong enough to handle this?
+                  </label>
+                </div>
+                
+                {/* Term 3 */}
+                <div className="flex flex-col items-center text-center space-y-4 p-6 bg-white/5 rounded-xl">
+                  <input
+                    type="checkbox"
+                    id="term3"
+                    checked={termsAccepted.term3}
+                    onChange={(e) => setTermsAccepted(prev => ({...prev, term3: e.target.checked}))}
+                    className="w-6 h-6 text-green-500 bg-transparent border-2 border-green-400 rounded focus:ring-green-500 focus:ring-2 cursor-pointer"
+                  />
+                  <label htmlFor="term3" className="text-white/95 text-base sm:text-lg leading-relaxed cursor-pointer">
+                    <span className="font-bold text-yellow-300">3. WITNESS BAD THINGS:</span><br />
+                    You may have to witness very bad things. Are you prepared?
+                  </label>
+                </div>
               </div>
               
-              {/* Tailwind Card */}
-              <div className="group bg-gradient-to-br from-purple-500/20 to-pink-600/20 backdrop-blur-sm border border-purple-400/30 rounded-2xl p-6 hover:border-purple-300/60 transition-all duration-300 hover:scale-105">
-                <div className="text-4xl mb-3 group-hover:animate-pulse">🎨</div>
-                <h3 className="text-lg font-bold text-purple-300 mb-2">Tailwind CSS</h3>
-                <p className="text-white/80 text-sm">Making everything look prettier than reality!</p>
+              {/* Legal Footer */}
+              <div className="mt-6 pt-4 border-t border-white/20">
+                <p className="text-white/70 text-xs text-center leading-relaxed">
+                  By checking all boxes above, you hereby waive your right to complain about time wasted, 
+                  productivity lost, or any spontaneous urges to jump off furniture to test gravity. 
+                  <br />
+                  <span className="text-red-300 font-semibold">This agreement is binding in all dimensions where physics applies.</span>
+                </p>
               </div>
             </div>
             
-            {/* Creative Features Row */}
-            <div className="flex flex-wrap justify-center gap-4 mb-8">
-              <div className="bg-green-500/20 backdrop-blur-sm border border-green-400/40 rounded-full px-4 py-2 text-green-300 text-sm font-semibold">
-                🗣️ AI Voice Acting (He complains a lot!)
-              </div>
-              <div className="bg-blue-500/20 backdrop-blur-sm border border-blue-400/40 rounded-full px-4 py-2 text-blue-300 text-sm font-semibold">
-                💬 Cartoon Speech Bubbles
-              </div>
-              <div className="bg-yellow-500/20 backdrop-blur-sm border border-yellow-400/40 rounded-full px-4 py-2 text-yellow-300 text-sm font-semibold">
-                🌅 Living Sunset World
-              </div>
-            </div>
-            
-            {/* Big Dramatic Start Button */}
-            <div className="relative">
-              <button
-                onClick={startGame}
-                className="group relative inline-flex items-center justify-center px-8 sm:px-16 py-4 sm:py-6 text-xl sm:text-3xl font-black text-white bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 rounded-full hover:from-red-500 hover:via-orange-400 hover:to-yellow-400 transform hover:scale-110 transition-all duration-300 shadow-2xl hover:shadow-orange-500/60"
-              >
-                <span className="relative z-10 flex items-center gap-4">
-                  😈 WATCH HIM SUFFER
-                </span>
-                <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-40 transition-opacity duration-300"></div>
-                <div className="absolute -inset-2 bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 rounded-full opacity-0 group-hover:opacity-80 blur-xl transition-opacity duration-300"></div>
-              </button>
-              
-              {/* Floating text around button */}
-              <div className="absolute -top-6 -left-8 text-2xl animate-bounce delay-300">😂</div>
-              <div className="absolute -top-4 -right-8 text-2xl animate-bounce delay-700">🤣</div>
-              <div className="absolute -bottom-6 left-4 text-2xl animate-bounce delay-500">💀</div>
-            </div>
-            
-            {/* Bottom Humorous Warning */}
-            <div className="mt-8 bg-red-500/20 backdrop-blur-sm border border-red-400/40 rounded-2xl p-4 max-w-2xl mx-auto">
-              <p className="text-red-200 text-sm sm:text-base font-medium">
-                ⚠️ Warning: May cause uncontrollable laughter and existential questions about determination vs. stupidity!
-              </p>
+            {/* Conditional Start Button */}
+            <div className="text-center mt-12">
+              {allTermsAccepted ? (
+                <div className="relative inline-block">
+                  <button
+                    onClick={startGame}
+                    className="group relative inline-flex items-center justify-center px-12 py-6 text-2xl font-black text-white bg-gradient-to-r from-red-600 via-orange-500 to-yellow-500 rounded-full hover:from-red-500 hover:via-orange-400 hover:to-yellow-400 transform hover:scale-110 transition-all duration-300 shadow-2xl hover:shadow-orange-500/60"
+                  >
+                    <span className="relative z-10 flex items-center gap-4">
+                      😈 WATCH HIM SUFFER
+                    </span>
+                    <div className="absolute inset-0 bg-gradient-to-r from-pink-400 to-purple-400 rounded-full opacity-0 group-hover:opacity-40 transition-opacity duration-300"></div>
+                    <div className="absolute -inset-2 bg-gradient-to-r from-red-400 via-orange-400 to-yellow-400 rounded-full opacity-0 group-hover:opacity-80 blur-xl transition-opacity duration-300"></div>
+                  </button>
+                  
+                  {/* Floating text around button */}
+                  <div className="absolute -top-6 -left-8 text-2xl animate-bounce delay-300">😂</div>
+                  <div className="absolute -top-4 -right-8 text-2xl animate-bounce delay-700">🤣</div>
+                  <div className="absolute -bottom-6 left-4 text-2xl animate-bounce delay-500">💀</div>
+                  
+                  {/* Success Message */}
+                  <p className="text-green-300 text-base mt-6 font-semibold animate-pulse">
+                    ✅ Agreement Complete! You may now proceed to witness the chaos.
+                  </p>
+                </div>
+              ) : (
+                <div className="relative inline-block">
+                  {/* Disabled Button */}
+                  <button
+                    disabled
+                    className="relative inline-flex items-center justify-center px-12 py-6 text-2xl font-black text-gray-500 bg-gray-600 rounded-full cursor-not-allowed opacity-50"
+                  >
+                    <span className="flex items-center gap-4">
+                      🔒 TERMS REQUIRED
+                    </span>
+                  </button>
+                  
+                  {/* Instruction Message */}
+                  <p className="text-red-300 text-base mt-6 font-semibold animate-pulse">
+                    ⚠️ You must agree to all terms above to proceed with this madness!
+                  </p>
+                </div>
+              )}
             </div>
           </div>
         </div>
@@ -1149,9 +1134,7 @@ const GameCanvas = () => {
         </button>
         
         <div className="text-center">
-          <h1 className="text-4xl font-bold text-orange-300 mb-2">
-            🎭 The Eternal Bouncer
-          </h1>
+          
           <p className="text-gray-300 text-lg">
             Watch our determined hero's endless adventure!
           </p>
@@ -1185,15 +1168,7 @@ const GameCanvas = () => {
         />
         
         {/* Game Info Overlay */}
-        <div className="absolute top-4 right-4 bg-black bg-opacity-50 text-white p-3 rounded-lg">
-          <div className="text-sm space-y-1">
-            <div>🌅 Sunset Mode</div>
-            <div>🎮 Physics Engine: Active</div>
-            <div>💫 Bounces: {bounceCount}/3</div>
-            <div>{isGrounded ? '🟢 Grounded' : '🔴 Airborne'}</div>
-            <div>🎭 State: {characterState}</div>
-          </div>
-        </div>
+       
 
         {/* Cartoon Dialogue Bubble */}
         {dialogue && bubblePos.x != null && bubblePos.y != null && (
@@ -1298,11 +1273,7 @@ const GameCanvas = () => {
 
       {/* Game Controls */}
       <div className="mt-4 text-center space-y-2">
-        <div className="text-gray-400 text-sm">
-          <p>🎮 COMPLETE GAME LOOP ✅</p>
-          <p>Fall → 1 Bounce → Settle → Stand → Speak → Walk to Ladder</p>
-          <p>Watch the character's full journey cycle!</p>
-        </div>
+       
         <button
           onClick={() => {
             setBounceCount(0);
@@ -1337,7 +1308,7 @@ const GameCanvas = () => {
           }}
         className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-500 transition-colors"
         >
-          🔄 Reset Ragdoll
+          Throw him again
         </button>
       </div>
     </div>
