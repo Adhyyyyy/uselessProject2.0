@@ -4,6 +4,7 @@ import { CharacterStateMachine } from './CharacterStateMachine.js';
 import { PhysicsController } from './PhysicsController.js';
 import PoseController from './PoseController.js';
 import AnimationController from './AnimationController.js';
+import { voiceController } from './VoiceController.js';
 
 const GameCanvas = () => {
   const canvasRef = useRef(null);
@@ -36,6 +37,9 @@ const GameCanvas = () => {
   
   const allTermsAccepted = Object.values(termsAccepted).every(Boolean);
 
+  // Voice control state
+  const [voiceEnabled, setVoiceEnabled] = useState(true);
+
   useEffect(() => {
     dialogueRef.current = dialogue;
     // When dialogue just appeared, place bubble near current head position immediately
@@ -65,6 +69,11 @@ const GameCanvas = () => {
 
   const goBackToIntro = () => {
     setGameState('intro');
+  };
+
+  const toggleVoice = () => {
+    const newState = voiceController.toggle();
+    setVoiceEnabled(newState);
   };
 
   useEffect(() => {
@@ -1273,6 +1282,17 @@ const GameCanvas = () => {
 
       {/* Game Controls */}
       <div className="mt-4 text-center space-y-2">
+        {/* Voice Toggle Button */}
+        <button
+          onClick={toggleVoice}
+          className={`mr-4 px-4 py-2 rounded-lg transition-colors ${
+            voiceEnabled 
+              ? 'bg-green-600 hover:bg-green-500 text-white' 
+              : 'bg-gray-600 hover:bg-gray-500 text-gray-300'
+          }`}
+        >
+          {voiceEnabled ? '🔊 Voice ON' : '🔇 Voice OFF'}
+        </button>
        
         <button
           onClick={() => {

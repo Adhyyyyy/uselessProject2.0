@@ -2,6 +2,7 @@
  * CharacterStateMachine - Manages character state transitions and timing
  */
 import Matter from 'matter-js';
+import { voiceController } from './VoiceController.js';
 
 export class CharacterStateMachine {
   constructor(characterParts, setCharacterState, setDialogue, setBounceCount) {
@@ -18,18 +19,36 @@ export class CharacterStateMachine {
     this.animationController = null;
     this.poseController = null;
     this.phrases = [
-      "Uh oh, I'm not dead!",
-      "Gravity and I have issues.",
-      "Is this flight... or fright?",
-      "I bounce back. Literally.",
-      "My bones signed a waiver.",
-      "10/10 landing. By a penguin.",
-      "Note to self: softer ground.",
-      "Again! For science!",
-      "I regret everything and nothing.",
-      "The ground likes me too much.",
-      "I'm fine. Probably.",
-      "It’s not falling—it’s surprise gravity.",
+      "Well, that sucked!",
+      "Ow! My everything!",
+      "Nailed it! ...into the ground.",
+      "Physics is broken!",
+      "I meant to do that!",
+      "Gravity's a snitch!",
+      "My face broke my fall!",
+      "That's gonna leave a mark!",
+      "I'm rubber, you're... ow!",
+      "Ground: 1, Me: 0",
+      "Oopsie daisy!",
+      "I'm fine! Everything's fine!",
+      "Why do I keep doing this?!",
+      "This is not how flying works!",
+      "My chiropractor will love this!",
+      "At least I'm consistent!",
+      "Note to self: gravity exists.",
+      "I should've stayed in bed!",
+      "Somebody call my insurance!",
+      "That didn't go as planned!",
+      "I'm getting good at this... badly!",
+      "Maybe next time!",
+      "Splat! Classic me.",
+      "I really thought that would work!",
+      "Why is the ground so hard?!",
+      "This ladder owes me money!",
+      "I'm basically a professional now!",
+      "That was totally on purpose!",
+      "My dignity went splat too!",
+      "I regret my life choices!"
     ];
     this.phraseIndex = 0;
     this.defaultCollisionMask = new Map();
@@ -166,26 +185,54 @@ export class CharacterStateMachine {
     const text = this.phrases[this.phraseIndex % this.phrases.length];
     this.phraseIndex += 1;
     this.setDialogue(text);
-    console.log('💬 Speaking dialogue...');
-    // Speak via Web Speech API if available
+    console.log('💬 Speaking dialogue:', text);
+    
+    // Enhanced realistic male voice
     try {
       if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
-        const utter = new SpeechSynthesisUtterance(text);
-        utter.rate = 1.05;
-        utter.pitch = 1.0;
-        utter.volume = 0.9;
-        window.speechSynthesis.cancel();
-        window.speechSynthesis.speak(utter);
+        // Use enhanced voice controller for realistic male voice
+        voiceController.speak(text);
+        
+        // Adjust dialogue timing based on speech length for better sync
+        const estimatedDuration = this.estimateSpeechDuration(text);
+        const dialogueDisplayTime = Math.max(2000, estimatedDuration + 500); // Minimum 2s, plus buffer
+        
+        console.log(`🎙️ Estimated speech duration: ${estimatedDuration}ms, dialogue time: ${dialogueDisplayTime}ms`);
+        
+        // Dialogue → dynamic timing → Start walking
+        const walkingTimer = setTimeout(() => {
+          this.setDialogue('');
+          this.startWalking();
+        }, dialogueDisplayTime);
+        
+        this.timers.push(walkingTimer);
+        return;
       }
-    } catch (_) {}
+    } catch (error) {
+      console.error('❌ Voice synthesis failed:', error);
+    }
     
-    // Dialogue → 2000 ms → Start walking
+    // Fallback: original timing if voice fails
     const walkingTimer = setTimeout(() => {
       this.setDialogue('');
       this.startWalking();
     }, 2000);
     
     this.timers.push(walkingTimer);
+  }
+
+  // Estimate speech duration for better timing synchronization
+  estimateSpeechDuration(text) {
+    // Average speaking rate: ~150-200 words per minute
+    // Enhanced voice controller uses rate: 0.85, so adjust accordingly
+    const wordsPerMinute = 150;
+    const rateAdjustment = 0.85; // Voice controller rate setting
+    
+    const words = text.split(' ').length;
+    const baseTimeMs = (words / wordsPerMinute) * 60 * 1000;
+    const adjustedTimeMs = baseTimeMs / rateAdjustment;
+    
+    return Math.round(adjustedTimeMs);
   }
 
   // Start walking
