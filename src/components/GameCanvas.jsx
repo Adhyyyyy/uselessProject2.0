@@ -21,7 +21,7 @@ const GameCanvas = () => {
   const [characterState, setCharacterState] = useState('falling'); // 'falling', 'bouncing', 'settled', 'standing', 'walking', 'climbing'
   const [dialogue, setDialogue] = useState('');
   const [bubblePos, setBubblePos] = useState({ x: null, y: null });
-  const [bubbleFontSize, setBubbleFontSize] = useState(14);
+  const [bubbleFontSize, setBubbleFontSize] = useState(18);
   const lastBubbleUpdateRef = useRef(0);
   const dialogueRef = useRef('');
   
@@ -53,10 +53,10 @@ const GameCanvas = () => {
     // Adjust font size to keep text within bubble
     if (dialogue) {
       const len = dialogue.length;
-      let size = 14;
-      if (len > 40) size = 12;
-      if (len > 70) size = 10;
-      if (len > 100) size = 8;
+      let size = 18;
+      if (len > 60) size = 14;
+      if (len > 90) size = 12;
+      if (len > 120) size = 10;
       setBubbleFontSize(size);
     }
   }, [dialogue]);
@@ -1393,7 +1393,7 @@ const GameCanvas = () => {
                       display: 'flex',
                       alignItems: 'center',
                       justifyContent: 'center',
-                      padding: '6px',
+                      padding: '10px',
                     }}
                   >
                     <div
@@ -1401,13 +1401,13 @@ const GameCanvas = () => {
                           fontFamily: "'Inter', system-ui",
                           fontWeight: 700,
                         color: '#1a1a1a',
-                        fontSize: bubbleFontSize,
+                        fontSize: bubbleFontSize + 2,
                           lineHeight: 1.2,
                         textAlign: 'center',
                         wordBreak: 'break-word',
                         overflow: 'hidden',
                         display: '-webkit-box',
-                        WebkitLineClamp: 4,
+                        WebkitLineClamp: 3,
                         WebkitBoxOrient: 'vertical',
                         textShadow: '0 1px 2px rgba(255,255,255,0.8)',
                       }}
