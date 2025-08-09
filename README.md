@@ -1,3 +1,5 @@
+<img width="3188" height="1202" alt="472981058-517ad8e9-ad22-457d-9538-a9e62d137cd7" src="https://github.com/user-attachments/assets/36da5f8c-3c10-4ac0-8eb6-fecb48c5d549" />
+
 # ETERNITY JUMPER 🎯
 
 ## Basic Details
@@ -85,14 +87,15 @@ npm run dev
 
 **Screenshots**
 
-![Landing Page](screenshots/landing-page.png)  
-*The professionally designed landing page with hell-themed gradients and mandatory psychological preparation requirements*
+Landing page
+<img width="1919" height="848" alt="image" src="https://github.com/user-attachments/assets/130ec3c6-d240-452f-87ed-26adaa1f79ba" />
 
-![Terms and Conditions](screenshots/terms-conditions.png)  
-*Legal disclaimer system requiring users to accept witnessing digital suffering - note the green checkboxes and serious legal language*
 
-![Character in Action](screenshots/character-dialogue.png)  
-*Our hero mid-failure with realistic speech bubble saying "Well, that sucked!" - demonstrating the perfect sync between physics and voice acting*
+Main page
+
+<img width="1201" height="858" alt="image" src="https://github.com/user-attachments/assets/b9f22f89-4f88-4ec1-96ed-195e2085531b" />
+<img width="1204" height="863" alt="image" src="https://github.com/user-attachments/assets/ce3c9f8e-6a48-4fb6-95a0-dbf95d607385" />
+
 
 **Diagrams**
 
@@ -128,11 +131,9 @@ npm run dev
 - **Cartoon speech bubbles** with breathing animations
 
 ### 📋 **Professional UI/UX**
-- **Hell-themed landing page** with glassmorphism effects
 - **Terms & Conditions** requiring psychological preparedness
 - **Voice toggle controls** for audio management
-- **Responsive design** working on all devices
-- **Smooth transitions** and professional animations
+
 
 ---
 
@@ -176,8 +177,7 @@ npm run dev
 - **Realistic physics** with proper collision detection
 
 ### 🎨 **Professional Polish**
-- **Modern UI/UX** with glassmorphism and smooth animations
-- **Accessibility considerations** with proper labels and focus states
+
 - **Performance optimization** with efficient rendering loops
 - **Cross-browser compatibility** with fallback systems
 
