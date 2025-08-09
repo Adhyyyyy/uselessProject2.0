@@ -99,9 +99,6 @@ Main page
 
 **Diagrams**
 
-![Workflow Architecture](diagrams/system-architecture.png)  
-*Complete system architecture showing the interaction between React components, Matter.js physics engine, Web Speech API, and Canvas 2D rendering pipeline*
-
 ---
 
 ## Key Features Breakdown
