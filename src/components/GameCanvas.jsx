@@ -2,6 +2,7 @@ import { useRef, useEffect, useState } from 'react';
 import Matter from 'matter-js';
 import { CharacterStateMachine } from './CharacterStateMachine.js';
 import { PhysicsController } from './PhysicsController.js';
+import PoseController from './PoseController.js';
 import AnimationController from './AnimationController.js';
 
 const GameCanvas = () => {
@@ -16,6 +17,28 @@ const GameCanvas = () => {
   const [isGrounded, setIsGrounded] = useState(false);
   const [characterState, setCharacterState] = useState('falling'); // 'falling', 'bouncing', 'settled', 'standing', 'walking', 'climbing'
   const [dialogue, setDialogue] = useState('');
+  const [bubblePos, setBubblePos] = useState({ x: null, y: null });
+  const [bubbleFontSize, setBubbleFontSize] = useState(18);
+  const lastBubbleUpdateRef = useRef(0);
+  const dialogueRef = useRef('');
+
+  useEffect(() => {
+    dialogueRef.current = dialogue;
+    // When dialogue just appeared, place bubble near current head position immediately
+    if (dialogue && engineRef.current?.characterParts?.head) {
+      const head = engineRef.current.characterParts.head;
+      setBubblePos({ x: head.position.x + 20, y: head.position.y - 30 });
+    }
+    // Adjust font size to keep text within bubble
+    if (dialogue) {
+      const len = dialogue.length;
+      let size = 18;
+      if (len > 60) size = 14;
+      if (len > 90) size = 12;
+      if (len > 120) size = 10;
+      setBubbleFontSize(size);
+    }
+  }, [dialogue]);
 
   const startGame = () => {
     setGameState('playing');
@@ -613,6 +636,24 @@ const GameCanvas = () => {
         
         ctx.restore();
       });
+
+      // Update speech bubble position (throttled) near the head
+      const now = performance.now();
+      if (dialogueRef.current && now - lastBubbleUpdateRef.current > 100) {
+        const head = characterParts.head;
+        if (head) {
+          // Offset bubble slightly above and to the right of head
+          const bx = head.position.x + 20;
+          const by = head.position.y - 30;
+          setBubblePos((prev) => {
+            if (!prev || Math.abs(prev.x - bx) > 1 || Math.abs(prev.y - by) > 1) {
+              return { x: bx, y: by };
+            }
+            return prev;
+          });
+          lastBubbleUpdateRef.current = now;
+        }
+      }
     });
 
     // Background is now handled by CSS gradient
@@ -628,11 +669,15 @@ const GameCanvas = () => {
     stateMachineRef.current = new CharacterStateMachine(characterParts, setCharacterState, setDialogue, setBounceCount);
     physicsControllerRef.current = new PhysicsController(characterParts, stateMachineRef.current);
     engineRef.current.animationController = new AnimationController(characterParts);
+    engineRef.current.poseController = new PoseController(characterParts, engine.world);
     
     // Set cross-references
     stateMachineRef.current.setPhysicsController(physicsControllerRef.current);
     if (stateMachineRef.current.setAnimationController) {
       stateMachineRef.current.setAnimationController(engineRef.current.animationController);
+    }
+    if (stateMachineRef.current.setPoseController) {
+      stateMachineRef.current.setPoseController(engineRef.current.poseController);
     }
 
     // Cleanup function
@@ -801,13 +846,58 @@ const GameCanvas = () => {
         </div>
 
         {/* Dialogue Bubble */}
-        {dialogue && (
-          <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 bg-white border-4 border-gray-800 rounded-xl p-4 shadow-lg z-20">
-            <div className="text-black font-bold text-lg text-center min-w-[200px]">
-              💬 "{dialogue}"
+        {dialogue && bubblePos.x != null && bubblePos.y != null && (
+          <div
+            className="absolute z-20 pointer-events-none"
+            style={{ left: bubblePos.x, top: bubblePos.y, transform: 'translate(-50%, -110%)' }}
+          >
+            <div className="relative" style={{ width: 260, height: 130 }}>
+              {/* SVG cloud bubble with outline and tail */}
+              <svg width="260" height="130" viewBox="0 0 260 130">
+                <defs>
+                  <clipPath id="speechClip">
+                    <path d="M40,70 C25,70 20,55 30,45 C28,25 55,20 68,32 C78,15 110,15 122,32 C140,24 162,32 166,50 C185,50 196,64 190,78 C182,94 160,96 148,90 C136,106 98,106 86,90 C66,100 48,96 44,86 C30,86 22,80 24,70 Z" />
+                  </clipPath>
+                </defs>
+                {/* Outline */}
+                <path d="M40,70 C25,70 20,55 30,45 C28,25 55,20 68,32 C78,15 110,15 122,32 C140,24 162,32 166,50 C185,50 196,64 190,78 C182,94 160,96 148,90 C136,106 98,106 86,90 C66,100 48,96 44,86 C30,86 22,80 24,70 Z" fill="#ffffff" stroke="#1f2937" strokeWidth="4" />
+                {/* Tail (outline) */}
+                <path d="M70,96 L60,118 L84,98" fill="#ffffff" stroke="#1f2937" strokeWidth="4" />
+                {/* Text inside via foreignObject clipped to bubble */}
+                <foreignObject x="35" y="30" width="190" height="70" clipPath="url(#speechClip)">
+                  <div
+                    xmlns="http://www.w3.org/1999/xhtml"
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      padding: '6px',
+                    }}
+                  >
+                    <div
+                      style={{
+                        fontFamily: "'Baloo 2', system-ui",
+                        fontWeight: 700,
+                        color: '#111',
+                        fontSize: bubbleFontSize,
+                        lineHeight: 1.05,
+                        textAlign: 'center',
+                        wordBreak: 'break-word',
+                        hyphens: 'auto',
+                        overflow: 'hidden',
+                        display: '-webkit-box',
+                        WebkitLineClamp: 3,
+                        WebkitBoxOrient: 'vertical',
+                      }}
+                    >
+                      {dialogue}
+                    </div>
+                  </div>
+                </foreignObject>
+              </svg>
             </div>
-            {/* Speech bubble tail */}
-            <div className="absolute bottom-[-10px] left-1/2 transform -translate-x-1/2 w-0 h-0 border-l-[10px] border-r-[10px] border-t-[10px] border-l-transparent border-r-transparent border-t-gray-800"></div>
           </div>
         )}
       </div>

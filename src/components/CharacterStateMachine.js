@@ -16,6 +16,22 @@ export class CharacterStateMachine {
     this.timers = [];
     this.physicsController = null; // Will be set later
     this.animationController = null;
+    this.poseController = null;
+    this.phrases = [
+      "Uh oh, I'm not dead!",
+      "Gravity and I have issues.",
+      "Is this flight... or fright?",
+      "I bounce back. Literally.",
+      "My bones signed a waiver.",
+      "10/10 landing. By a penguin.",
+      "Note to self: softer ground.",
+      "Again! For science!",
+      "I regret everything and nothing.",
+      "The ground likes me too much.",
+      "I'm fine. Probably.",
+      "It’s not falling—it’s surprise gravity.",
+    ];
+    this.phraseIndex = 0;
     this.defaultCollisionMask = new Map();
     
     // Character dimensions for bounce calculation
@@ -37,6 +53,10 @@ export class CharacterStateMachine {
   // Set animation controller reference
   setAnimationController(animationController) {
     this.animationController = animationController;
+  }
+
+  setPoseController(poseController) {
+    this.poseController = poseController;
   }
 
   // Clean up all timers
@@ -68,12 +88,12 @@ export class CharacterStateMachine {
     this.currentState = 'standing';
     this.setCharacterState('standing');
     console.log('🧍 Standing up immediately...');
-    if (this.animationController) {
-      // Freeze bodies for animation and tween full pose (angles + offsets)
+    if (this.poseController) {
+      this.poseController.enter();
+      this.poseController.tweenUpright(700, 560);
+    } else if (this.animationController) {
       this.animationController.setStaticForAnimation(true);
-      this.animationController.tweenToUprightPose(700, () => {
-        console.log('✅ Upright pose reached');
-      });
+      this.animationController.tweenToUprightPose(700, () => {});
     }
 
     // Hold 2000ms, then dialogue 2000ms, then walk
@@ -143,8 +163,21 @@ export class CharacterStateMachine {
   startDialogue() {
     this.currentState = 'speaking';
     this.setCharacterState('speaking');
-    this.setDialogue('Uh oh, I\'m not dead!');
+    const text = this.phrases[this.phraseIndex % this.phrases.length];
+    this.phraseIndex += 1;
+    this.setDialogue(text);
     console.log('💬 Speaking dialogue...');
+    // Speak via Web Speech API if available
+    try {
+      if (typeof window !== 'undefined' && 'speechSynthesis' in window) {
+        const utter = new SpeechSynthesisUtterance(text);
+        utter.rate = 1.05;
+        utter.pitch = 1.0;
+        utter.volume = 0.9;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(utter);
+      }
+    } catch (_) {}
     
     // Dialogue → 2000 ms → Start walking
     const walkingTimer = setTimeout(() => {
@@ -161,10 +194,10 @@ export class CharacterStateMachine {
     this.setCharacterState('walking');
     console.log('🚶 Starting to walk (animation)...');
     // Animation-driven walk
-    if (this.animationController) {
-      this.animationController.playWalk(28, () => {
-        this.startClimb();
-      });
+    if (this.poseController) {
+      this.poseController.playRun(95, () => this.startClimb(), 560);
+    } else if (this.animationController) {
+      this.animationController.playRun(85, () => this.startClimb());
     }
     
     // No dialogue in simplified flow
@@ -174,11 +207,10 @@ export class CharacterStateMachine {
     this.currentState = 'climbing';
     this.setCharacterState('climbing');
     console.log('🧗 Start climbing...');
-    if (this.animationController) {
-      // Ladder geometry from GameCanvas: ladderX=50, rungs spacing=60, top ~90
-      this.animationController.playClimb({ ladderX: 50, topY: 90, rungSpacing: 60 }, () => {
-        this.jumpFromTop();
-      });
+    if (this.poseController) {
+      this.poseController.playClimb({ ladderX: 50, topY: 90, rungSpacing: 60 }, () => this.jumpFromTop());
+    } else if (this.animationController) {
+      this.animationController.playClimb({ ladderX: 50, topY: 90, rungSpacing: 60 }, () => this.jumpFromTop());
     }
   }
 
@@ -187,6 +219,9 @@ export class CharacterStateMachine {
     if (this.animationController) {
       this.animationController.stopAll();
       this.animationController.restoreDynamic();
+    }
+    if (this.poseController) {
+      this.poseController.leave();
     }
     const parts = this.characterParts;
     // Nudge away from ladder and slightly upward to avoid immediate overlap

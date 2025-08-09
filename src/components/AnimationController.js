@@ -224,6 +224,99 @@ export class AnimationController {
     }, 16);
   }
 
+  // Faster run with stronger swing and shorter gait period
+  playRun(speedPxPerSec = 95, onReachedLadder) {
+    // Stop existing walk/run
+    if (this.walkInterval) {
+      clearInterval(this.walkInterval);
+      this.walkInterval = null;
+    }
+
+    const parts = this.characterParts;
+    const torso = parts.torso;
+    const startTime = Date.now();
+    const periodMs = 480; // quicker cadence for running
+
+    // Cache upright offsets so rig stays coherent during run
+    const { offsets: baseOffsets } = this._computeLocalOffsets();
+    // Ground clamp
+    const groundTopY = 560;
+    const footHalf = 1.5; // matches foot height 3
+    const targetFootCenterY = groundTopY - footHalf;
+
+    this.walkInterval = setInterval(() => {
+      const now = Date.now();
+      const phase = ((now - startTime) % periodMs) / periodMs; // 0..1
+      const t = phase * Math.PI * 2; // 0..2π
+
+      // Running gait (side-view):
+      // - Thighs swing large and opposite
+      // - Shins flex/extend with phase lead to simulate knee action
+      // - Feet dorsiflex during swing, plantarflex at toe-off
+      // - Arms swing opposite to legs
+      // - Torso leans forward slightly, head stabilizes
+      const A_thigh = 0.32;
+      const A_shin = 0.18;
+      const A_foot = 0.05;
+      const A_arm = 0.22;
+
+      const thighL = A_thigh * Math.sin(t);
+      const thighR = -A_thigh * Math.sin(t);
+      const shinL = -A_shin * Math.sin(t + Math.PI / 2) - 0.04; // flex mid-swing
+      const shinR = A_shin * Math.sin(t + Math.PI / 2) + 0.04;
+      const footL = A_foot * Math.sin(t + Math.PI / 2);
+      const footR = -A_foot * Math.sin(t + Math.PI / 2);
+      const armL = -A_arm * Math.sin(t);
+      const armR = A_arm * Math.sin(t);
+      const torsoLean = -0.12 + 0.03 * Math.sin(t);
+      const headPitch = -torsoLean * 0.15; // stabilize
+
+      const angles = {
+        leftThigh: thighL,
+        rightThigh: thighR,
+        leftShin: shinL,
+        rightShin: shinR,
+        leftFoot: footL,
+        rightFoot: footR,
+        leftUpperArm: armL,
+        rightUpperArm: armR,
+        leftForearm: 0,
+        rightForearm: 0,
+        leftHand: 0,
+        rightHand: 0,
+        head: headPitch,
+        torso: torsoLean,
+      };
+      Object.entries(angles).forEach(([k, a]) => {
+        const b = parts[k];
+        if (!b) return;
+        Matter.Body.setAngle(b, a);
+      });
+
+      // Move base and reconstruct rig to keep feet on ground line
+      const dt = 0.016; // ~60 FPS
+      const dx = -speedPxPerSec * dt;
+      const baseX = torso ? torso.position.x + dx : 0;
+      const leftFootOffY = baseOffsets.leftFoot ? baseOffsets.leftFoot.y : 31;
+      const rightFootOffY = baseOffsets.rightFoot ? baseOffsets.rightFoot.y : 31;
+      const avgFootOffY = (leftFootOffY + rightFootOffY) / 2;
+      const baseY = targetFootCenterY - avgFootOffY;
+
+      Object.entries(parts).forEach(([name, body]) => {
+        if (!body) return;
+        const off = baseOffsets[name] || { x: 0, y: 0 };
+        Matter.Body.setPosition(body, { x: baseX + off.x, y: baseY + off.y });
+      });
+
+      // Stop near ladder
+      if (torso && torso.position.x <= 120) {
+        clearInterval(this.walkInterval);
+        this.walkInterval = null;
+        if (onReachedLadder) onReachedLadder();
+      }
+    }, 16);
+  }
+
   // Simple rung-by-rung climb: move to ladder X, then step torso and limbs up by rungSpacing until topY
   playClimb({ ladderX = 50, topY = 90, rungSpacing = 60 } = {}, onDone) {
     // Ensure static animation mode
