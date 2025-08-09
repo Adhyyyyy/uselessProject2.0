@@ -139,7 +139,11 @@ Main page
 
 ## Project Demo
 
-**Video:** [Watch the Eternal Suffering](demo-video-link)  
+**Video:** 
+
+https://github.com/user-attachments/assets/8f3afab3-249d-428c-9c10-9711e76baccd
+
+
 *Demonstrates the complete user journey from accepting terms to witnessing the character's hilarious cycle of failure, including voice acting and physics interactions*
 
 ### Additional Demos
