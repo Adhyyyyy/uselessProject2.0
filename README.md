@@ -88,13 +88,16 @@ npm run dev
 **Screenshots**
 
 Landing page
-<img width="1919" height="848" alt="image" src="https://github.com/user-attachments/assets/130ec3c6-d240-452f-87ed-26adaa1f79ba" />
+<img width="1898" height="872" alt="image" src="https://github.com/user-attachments/assets/2393862c-12fa-44df-8ba4-aa0be3807d19" />
+
 
 
 Main page
 
-<img width="1201" height="858" alt="image" src="https://github.com/user-attachments/assets/b9f22f89-4f88-4ec1-96ed-195e2085531b" />
-<img width="1204" height="863" alt="image" src="https://github.com/user-attachments/assets/ce3c9f8e-6a48-4fb6-95a0-dbf95d607385" />
+<img width="1198" height="855" alt="image" src="https://github.com/user-attachments/assets/10a67e36-8c88-42c6-9f89-b02a37afeaaf" />
+
+<img width="1190" height="849" alt="image" src="https://github.com/user-attachments/assets/545ae33f-9afc-4db3-94fd-c01b4c3b8bc0" />
+
 
 
 **Diagrams**
