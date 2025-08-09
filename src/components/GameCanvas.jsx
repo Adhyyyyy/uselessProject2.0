@@ -39,11 +39,14 @@ const GameCanvas = () => {
     dialogueRef.current = dialogue;
     // When dialogue just appeared, place bubble at center of canvas
     if (dialogue) {
-      // Position bubble at exact center of canvas (no padding offset needed)
+      // Position bubble at center of canvas accounting for container padding
       const canvasWidth = 600;
-      const canvasHeight = 300; // Reduced canvas size
-      const bubbleX = canvasWidth / 2;
-      const bubbleY = canvasHeight / 2;
+      const canvasHeight = 300;
+      const containerPadding = 16; // p-4 = 16px padding from container
+      
+      // Center coordinates relative to the canvas container
+      const bubbleX = (canvasWidth / 2) + containerPadding;
+      const bubbleY = (canvasHeight / 2) + containerPadding;
       
       setBubblePos({ x: bubbleX, y: bubbleY });
     }
@@ -1331,7 +1334,7 @@ const GameCanvas = () => {
           >
               <motion.div 
                 className="relative" 
-              style={{ width: 300, height: 150 }}
+              style={{ width: 240, height: 120 }}
                 animate={{ 
                   y: [0, -8, 0],
                   rotate: [0, 1, -1, 0]
@@ -1343,10 +1346,10 @@ const GameCanvas = () => {
                 }}
               >
                 {/* Modern SVG speech bubble */}
-              <svg width="300" height="150" viewBox="0 0 300 150">
+              <svg width="240" height="120" viewBox="0 0 240 120">
                 <defs>
                   <clipPath id="speechClip">
-                    <path d="M50,85 C30,85 20,65 35,50 C30,25 65,15 85,35 C100,10 140,10 160,35 C180,20 220,30 225,55 C250,55 270,75 260,95 C250,120 210,125 190,110 C170,130 130,130 110,110 C85,125 60,120 50,105 C35,105 25,95 30,85 Z" />
+                    <path d="M40,68 C24,68 16,52 28,40 C24,20 52,12 68,28 C80,8 112,8 128,28 C144,16 176,24 180,44 C200,44 216,60 208,76 C200,96 168,100 152,88 C136,104 104,104 88,88 C68,100 48,96 40,84 C28,84 20,76 24,68 Z" />
                   </clipPath>
                     <linearGradient id="bubbleGradient" x1="0%" y1="0%" x2="100%" y2="100%">
                       <stop offset="0%" stopColor="rgba(255,255,255,0.95)" />
@@ -1356,7 +1359,7 @@ const GameCanvas = () => {
                 
                   {/* Glow effect */}
                 <path 
-                  d="M50,85 C30,85 20,65 35,50 C30,25 65,15 85,35 C100,10 140,10 160,35 C180,20 220,30 225,55 C250,55 270,75 260,95 C250,120 210,125 190,110 C170,130 130,130 110,110 C85,125 60,120 50,105 C35,105 25,95 30,85 Z" 
+                  d="M40,68 C24,68 16,52 28,40 C24,20 52,12 68,28 C80,8 112,8 128,28 C144,16 176,24 180,44 C200,44 216,60 208,76 C200,96 168,100 152,88 C136,104 104,104 88,88 C68,100 48,96 40,84 C28,84 20,76 24,68 Z" 
                     fill="rgba(255,107,107,0.3)" 
                     transform="scale(1.1)"
                     style={{ filter: 'blur(8px)' }}
@@ -1364,24 +1367,24 @@ const GameCanvas = () => {
                 
                   {/* Main bubble */}
                 <path 
-                  d="M50,85 C30,85 20,65 35,50 C30,25 65,15 85,35 C100,10 140,10 160,35 C180,20 220,30 225,55 C250,55 270,75 260,95 C250,120 210,125 190,110 C170,130 130,130 110,110 C85,125 60,120 50,105 C35,105 25,95 30,85 Z" 
+                  d="M40,68 C24,68 16,52 28,40 C24,20 52,12 68,28 C80,8 112,8 128,28 C144,16 176,24 180,44 C200,44 216,60 208,76 C200,96 168,100 152,88 C136,104 104,104 88,88 C68,100 48,96 40,84 C28,84 20,76 24,68 Z" 
                     fill="url(#bubbleGradient)" 
                     stroke="rgba(255,107,107,0.6)" 
-                    strokeWidth="3" 
+                    strokeWidth="2" 
                   strokeLinejoin="round"
                 />
                 
                   {/* Tail */}
                 <path 
-                  d="M85,115 L70,145 L110,120" 
+                  d="M68,92 L56,116 L88,96" 
                     fill="url(#bubbleGradient)" 
                     stroke="rgba(255,107,107,0.6)" 
-                  strokeWidth="3" 
+                  strokeWidth="2" 
                   strokeLinejoin="round"
                 />
                 
                 {/* Text content */}
-                <foreignObject x="45" y="35" width="210" height="80" clipPath="url(#speechClip)">
+                <foreignObject x="36" y="28" width="168" height="64" clipPath="url(#speechClip)">
                   <div
                     xmlns="http://www.w3.org/1999/xhtml"
                     style={{
